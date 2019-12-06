@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,6 +22,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import javax.servlet.ServletException;
@@ -35,6 +37,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     @Autowired
     DataSource dataSource;
 
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return NoOpPasswordEncoder.getInstance();
+    }
     /**
      * 配置如何通过拦截器保护请求
      * @param http
@@ -42,38 +48,88 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-            http
+        http.authorizeRequests()
+                .antMatchers("/hello").hasRole("user")
+                .antMatchers("/admin").hasRole("admin")
+                .antMatchers(HttpMethod.POST, "/login").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .addFilterBefore(new JwtLoginFilter("/login",authenticationManager()),UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtFilter(), UsernamePasswordAuthenticationFilter.class)
+                .csrf().disable();
+    }
+
+
+    /**
+     * 配置user-detail服务
+     * @param auth
+     * @throws Exception
+     */
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication().withUser("admin")
+                .password("123").roles("admin")
+                .and()
+                .withUser("sang")
+                .password("456")
+                .roles("user");
+        /**
+         * 基于内存的用户存储
+         */
+//        auth.inMemoryAuthentication().passwordEncoder(new MyPasswordEncoder())
+//                .withUser("user")
+//                .password("123456").roles("USER");
+        /**
+         * 基于数据库的内存存储
+         */
+//        auth.jdbcAuthentication().passwordEncoder(new MyPasswordEncoder()).dataSource(dataSource);
+
+    }
+
+
+    /**
+     * 判断请求是否是ajax请求
+     * @param request
+     * @return
+     */
+    public static boolean isAjaxRequest(HttpServletRequest request) {
+        String ajaxFlag = request.getHeader("X-Requested-With");
+        return ajaxFlag != null && "XMLHttpRequest".equals(ajaxFlag);
+    }
+
+    protected void configure_(HttpSecurity http) throws Exception {
+        http
                 .exceptionHandling()
                 .authenticationEntryPoint(new AuthenticationEntryPoint() {
-                /**
-                 * 访问没有授权路径执行的操作
-                 * @param request
-                 * @param response
-                 * @param authException
-                 * @throws IOException
-                 * @throws ServletException
-                 */
-                @Override
-                public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-                    response.sendRedirect(request.getContextPath()+"/login");
-                }
-            })
-                .and()
-            .csrf().disable()
-                .authorizeRequests()
                     /**
-                     * 静态资源不需要授权
+                     * 访问没有授权路径执行的操作
+                     * @param request
+                     * @param response
+                     * @param authException
+                     * @throws IOException
+                     * @throws ServletException
                      */
+                    @Override
+                    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+                        response.sendRedirect(request.getContextPath()+"/login");
+                    }
+                })
+                .and()
+                .csrf().disable()
+                .authorizeRequests()
+                /**
+                 * 静态资源不需要授权
+                 */
                 .antMatchers("/login","/css/**", "/js/**","/fonts/**")
                 .permitAll()
-                    /**
-                     * /test/**和/admin/**需要用户需要ROLE_USER的角色
-                     * 这里资源和角色是硬编码，也就是说，固定角色的个数，并且每个角色所对应的资源已经在代码里写死
-                     */
+                /**
+                 * /test/**和/admin/**需要用户需要ROLE_USER的角色
+                 * 这里资源和角色是硬编码，也就是说，固定角色的个数，并且每个角色所对应的资源已经在代码里写死
+                 */
                 .antMatchers("/test/**").hasRole("USER")
                 .antMatchers("/admin/**").hasRole("USER")
                 .and()
-            .formLogin()
+                .formLogin()
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
                 .defaultSuccessUrl("/hello")
@@ -117,10 +173,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                     }
                 })
                 .and()
-            .rememberMe()
+                .rememberMe()
                 .tokenValiditySeconds(2419200)
                 .key("saylovewall")
-            .and()
+                .and()
                 .logout()
                 .logoutSuccessHandler(new LogoutSuccessHandler() {
                     @Override
@@ -130,38 +186,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 })
                 .logoutUrl("/logout")
                 .permitAll();
-}
-
-
-    /**
-     * 配置user-detail服务
-     * @param auth
-     * @throws Exception
-     */
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        /**
-         * 基于内存的用户存储
-         */
-//        auth.inMemoryAuthentication().passwordEncoder(new MyPasswordEncoder())
-//                .withUser("user")
-//                .password("123456").roles("USER");
-        /**
-         * 基于数据库的内存存储
-         */
-        auth.jdbcAuthentication().passwordEncoder(new MyPasswordEncoder()).dataSource(dataSource);
-
-    }
-
-
-    /**
-     * 判断请求是否是ajax请求
-     * @param request
-     * @return
-     */
-    public static boolean isAjaxRequest(HttpServletRequest request) {
-        String ajaxFlag = request.getHeader("X-Requested-With");
-        return ajaxFlag != null && "XMLHttpRequest".equals(ajaxFlag);
     }
 }
 
