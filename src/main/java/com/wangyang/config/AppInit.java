@@ -35,5 +35,6 @@ public class AppInit extends AbstractAnnotationConfigDispatcherServletInitialize
         super.onStartup(servletContext);
         servletContext.addFilter("name",new CharacterEncodingFilter("UTF-8",true))
                 .addMappingForUrlPatterns(null,false,"/*");
+        servletContext.addServlet("H2Console","org.h2.server.web.WebServlet").addMapping("/console/*");
     }
 }

@@ -2,10 +2,8 @@ package com.wangyang.controller;
 
 import com.wangyang.config.MultipartRequestWapper;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;

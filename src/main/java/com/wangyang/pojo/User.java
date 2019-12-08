@@ -1,14 +1,23 @@
-package com.wangyang.poji;
+package com.wangyang.pojo;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.persistence.*;
 import java.util.Collection;
 import java.util.List;
 
+@Entity
 public class User implements UserDetails {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
     private String username;
     private String password;
+    /**
+     * 授权的角色
+     */
+    @Transient
     private List<GrantedAuthority> authorities;
 
     @Override
@@ -56,5 +65,13 @@ public class User implements UserDetails {
 
     public void setAuthorities(List<GrantedAuthority> authorities) {
         this.authorities = authorities;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

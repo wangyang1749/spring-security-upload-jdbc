@@ -1,7 +1,7 @@
 package com.wangyang.controller;
 
 import com.wangyang.config.MultipartRequestWapper;
-import com.wangyang.poji.Hello;
+import com.wangyang.pojo.User;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,16 +12,26 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.transaction.Transactional;
 import java.io.File;
 
 @Controller
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class HelloController {
 
+
+
     @RequestMapping("/hello")
     @ResponseBody
+    @Transactional
     public String hello(){
-        return "Hello words";
+//        User user = new User();
+//        user.setUsername("wangyang");
+//        user.setPassword("123456");
+//        userRepository.addUser(user);
+
+
+        return "Hello";
     }
 
     /**
@@ -64,8 +74,9 @@ public class HelloController {
     }
 
     @RequestMapping("/listHello")
-    public  @ResponseBody Hello listHello(){
-        return new Hello("zhangsan","123456");
+    public  @ResponseBody
+    User listHello(){
+        return new User();
     }
 
     /**
