@@ -1,6 +1,6 @@
 package com.wangyang.controller;
 
-import com.wangyang.config.MultipartRequestWapper;
+import com.wangyang.util.MultipartRequestWapper;
 import com.wangyang.pojo.User;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;

@@ -74,12 +74,12 @@ public class TestMybatisConfig {
      * @param dataSource
      * @return
 //     */
-//    @Bean
-//    public PlatformTransactionManager dataSourceTransactionManager(DataSource dataSource){
-//        DataSourceTransactionManager dataSourceTransactionManager = new DataSourceTransactionManager();
-//        dataSourceTransactionManager.setDataSource(dataSource);
-//        return dataSourceTransactionManager;
-//    }
+    @Bean
+    public PlatformTransactionManager dataSourceTransactionManager(DataSource dataSource){
+        DataSourceTransactionManager dataSourceTransactionManager = new DataSourceTransactionManager();
+        dataSourceTransactionManager.setDataSource(dataSource);
+        return dataSourceTransactionManager;
+    }
 
     /**
      * 配置编程式事务

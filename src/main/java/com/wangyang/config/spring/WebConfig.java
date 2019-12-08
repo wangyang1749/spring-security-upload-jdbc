@@ -1,4 +1,4 @@
-package com.wangyang.config;
+package com.wangyang.config.spring;
 
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Bean;

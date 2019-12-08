@@ -1,6 +1,6 @@
 package com.wangyang.controller;
 
-import com.wangyang.config.MultipartRequestWapper;
+import com.wangyang.util.MultipartRequestWapper;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import javax.servlet.ServletException;
