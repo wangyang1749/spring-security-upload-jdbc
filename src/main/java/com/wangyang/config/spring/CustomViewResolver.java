@@ -1,4 +1,4 @@
-package com.wangyang.config;
+package com.wangyang.config.spring;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.View;

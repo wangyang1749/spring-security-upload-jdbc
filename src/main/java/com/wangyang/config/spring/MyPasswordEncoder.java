@@ -1,4 +1,4 @@
-package com.wangyang.config;
+package com.wangyang.config.spring;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 

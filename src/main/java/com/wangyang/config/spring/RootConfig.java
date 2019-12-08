@@ -1,4 +1,4 @@
-package com.wangyang.config;
+package com.wangyang.config.spring;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Configurable;

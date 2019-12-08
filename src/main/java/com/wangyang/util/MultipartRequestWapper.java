@@ -1,4 +1,4 @@
-package com.wangyang.config;
+package com.wangyang.util;
 
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;

@@ -1,5 +1,7 @@
-package com.wangyang.config;
+package com.wangyang.config.spring;
 
+import com.wangyang.config.filter.JwtFilter;
+import com.wangyang.config.filter.JwtLoginFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +28,7 @@ import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter{
+public static class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     DataSource dataSource;
 
@@ -47,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 .antMatchers(HttpMethod.POST, "/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(new JwtLoginFilter("/login",authenticationManager()),UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtLoginFilter("/login",authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtFilter(), UsernamePasswordAuthenticationFilter.class)
                 .csrf().disable();
     }
@@ -69,13 +71,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         /**
          * 基于内存的用户存储
          */
-//        auth.inMemoryAuthentication().passwordEncoder(new MyPasswordEncoder())
-//                .withUser("user")
-//                .password("123456").roles("USER");
+        //        auth.inMemoryAuthentication().passwordEncoder(new MyPasswordEncoder())
+        //                .withUser("user")
+        //                .password("123456").roles("USER");
         /**
          * 基于数据库的内存存储
          */
-//        auth.jdbcAuthentication().passwordEncoder(new MyPasswordEncoder()).dataSource(dataSource);
+        //        auth.jdbcAuthentication().passwordEncoder(new MyPasswordEncoder()).dataSource(dataSource);
 
     }
 
@@ -160,7 +162,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                      */
                     @Override
                     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-//                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication failed");
+                        //                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication failed");
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                         response.getWriter().write("error .....");
                     }
