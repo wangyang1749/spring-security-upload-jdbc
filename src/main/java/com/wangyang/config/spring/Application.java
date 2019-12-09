@@ -35,6 +35,9 @@ public class Application extends AbstractAnnotationConfigDispatcherServletInitia
         super.onStartup(servletContext);
         servletContext.addFilter("name", new CharacterEncodingFilter("UTF-8", true))
                 .addMappingForUrlPatterns(null, false, "/*");
+        /**
+         * 配置嵌入式数据库H2 databases的网页访问
+         */
         servletContext.addServlet("H2Console", "org.h2.server.web.WebServlet").addMapping("/console/*");
     }
 

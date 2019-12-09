@@ -47,12 +47,17 @@ public  class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/hello").hasRole("user")
                 .antMatchers("/admin").hasRole("admin")
                 .antMatchers(HttpMethod.POST, "/login").permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
                 .and()
                 .addFilterBefore(new JwtLoginFilter("/login",authenticationManager()),UsernamePasswordAuthenticationFilter.class)
 //                .addFilterBefore(new JwtLoginFilter("/login",authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtFilter(), UsernamePasswordAuthenticationFilter.class)
+                //
                 .csrf().disable();
+        /**
+         * in a frame because it set 'X-Frame-Options' to 'deny'.
+         */
+        http.headers().frameOptions().disable();
     }
 
 

@@ -29,7 +29,7 @@ public class TestUSerDaoConfig {
     public DataSource dataSource(){
         BasicDataSource ds = new BasicDataSource();
         ds.setDriverClassName("org.h2.Driver");
-        ds.setUrl("jdbc:h2:~/wangyang1749");
+        ds.setUrl("jdbc:h2:~/spring_test");
         ds.setUsername("sa");
         System.out.println("-------配置spring的数据源----------");
         return ds;

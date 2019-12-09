@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.transaction.Transactional;
 import java.io.File;
 
 @Controller
@@ -23,7 +22,6 @@ public class HelloController {
 
     @RequestMapping("/hello")
     @ResponseBody
-    @Transactional
     public String hello(){
 //        User user = new User();
 //        user.setUsername("wangyang");
