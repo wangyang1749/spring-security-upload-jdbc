@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
-@Service
+//@Service
 public class UserServiceImpl implements IUserService {
 //    @Resource(name = "hibernate_user_dao")
     @Resource

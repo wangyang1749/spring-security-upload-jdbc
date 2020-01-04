@@ -1,7 +1,9 @@
-package com.wangyang.config.filter;
+package com.wangyang.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wangyang.pojo.User;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,12 +19,14 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * 一个是用户登录的过滤器，在用户的登录的过滤器中校验用户是否登录成功，
  * 如果登录成功，则生成一个token返回给客户端，
  * 登录失败则给前端一个登录失败的提示。
  */
+@Deprecated
 public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
 
     public JwtLoginFilter(String defaultFilterProcessesUrl, AuthenticationManager authenticationManager) {
@@ -45,19 +49,25 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+        // 获取用户登陆角色
         Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
-        StringBuffer as = new StringBuffer();
-        for (GrantedAuthority authority : authorities) {
-            as.append(authority.getAuthority())
-                    .append(",");
-        }
-//        String jwt = Jwts.builder()
-//                .claim("authorities", as)//配置用户角色
-//                .setSubject(authResult.getName())
-//                .setExpiration(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
-//                .signWith(SignatureAlgorithm.HS512,"abcdef13")
-//                .compact();
-        String jwt="token__123";
+        // 遍历用户角色
+        StringBuffer stringBuffer = new StringBuffer();
+        authorities.forEach(authority -> {
+            stringBuffer.append(authority.getAuthority()).append(",");
+        });
+
+        String jwt = Jwts.builder()
+                // Subject 设置用户名
+                .setSubject(authResult.getName())
+                // 设置用户权限
+                .claim("authorities", stringBuffer)
+                // 过期时间
+                .setExpiration(new Date(System.currentTimeMillis() + 7200000))
+                // 签名算法
+                .signWith(SignatureAlgorithm.HS512, "wangyang")
+                .compact();
+
         response.setContentType("application/json;charset=utf-8");
         PrintWriter out = response.getWriter();
         out.write(new ObjectMapper().writeValueAsString(jwt));

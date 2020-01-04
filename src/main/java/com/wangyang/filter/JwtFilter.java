@@ -1,4 +1,4 @@
-package com.wangyang.config.filter;
+package com.wangyang.filter;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -19,10 +19,12 @@ import java.util.List;
 /**
  * 过滤器则是当其他请求发送来，校验token的过滤器，如果校验成功，就让请求继续执行。
  */
+@Deprecated
 public class JwtFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest req = (HttpServletRequest) request;
+        try {
+            HttpServletRequest req = (HttpServletRequest) request;
 //        String jwtToken = req.getHeader("authorization");
 //        System.out.println(jwtToken);
 //        Claims claims = Jwts.parser().setSigningKey("abcdef13").parseClaimsJws(jwtToken.replace("Bearer",""))
@@ -30,7 +32,12 @@ public class JwtFilter extends GenericFilterBean {
 //        String username = claims.getSubject();//获取当前登录用户名
 //        List<GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList((String) claims.get("authorities"));
 //        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, null, authorities);
-//        SecurityContextHolder.getContext().setAuthentication(token);
-        chain.doFilter(req,response);
+            SecurityContextHolder.getContext().setAuthentication(null);
+            chain.doFilter(req,response);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ServletException e) {
+            e.printStackTrace();
+        }
     }
 }

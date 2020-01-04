@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" th:href="@{/main.css}" />
+    <script th:src="'/html/'+${love.jsName}+'.js'" src="/html/1.js"> </script>
+    <!-- <link rel="stylesheet" href="https://unpkg.com/swiper/css/swiper.css">   -->
+    <link rel="stylesheet" href="/html/swiper.min.css">
+    <link rel="stylesheet" href="/html/animate.css">
+
+    <!-- <script src="https://unpkg.com/swiper/js/swiper.js"> </script>   -->
+    <script src="/html/swiper.min.js"> </script>
+    <script src="/html/vue.min.js"> </script>
+    <script src="/html/animation-match.js"> </script>
+    <script src="/html/data.js"> </script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .swiper-slide {
+            /* background: linear-gradient(to bottom, #ff5252 0%, #ffffff 95%); */
+        }
+
+        .wrap-bg {
+            width: 100%;
+            height: 100%;
+            background: blue;
+            position: absolute;
+            z-index: -1;
+        }
+
+        .comp {
+            position: absolute;
+            overflow: hidden;
+        }
+
+        .in_comp {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 1289451561ww ${js}
+    <span th:text="${js}"></span> -->
+    <!-- <span th:text="${love.canvas}"></span> -->
+    <div id="app">
+        <div class="swiper-container">
+            <!-- 使用canvas作为背景 -->
+            <div class="wrap-bg" v-if="isSingleCanvas">
+                <canvas id="canvas" :width="c_w" :height="c_h" class="canvas-bg canvas" ref="canvas"></canvas>
+            </div>
+            <div class="swiper-wrapper">
+                <div class="swiper-slide" v-for="(page,idx) in pages" :key="page.id" ref="mySwiper">
+
+
+                    <!-- 使用canvas作为背景 -->
+                    <div class="wrap-bg" v-if="!isSingleCanvas">
+                        <canvas id="canvas" :width="c_w" :height="c_h" class="canvas-bg canvas" ref="canvas"></canvas>
+                    </div>
+
+                    <div class="box animated" :class="{[animations[comp.animation]['class']]: activePage === idx}"
+                        v-for="comp in page.comps" :key="comp.id">
+                        <div v-if="comp.type ==='text'" class="comp" :style="{
+                top:comp.css.base.t+'rem',
+                left:comp.css.base.l+'rem',
+                width:comp.css.base.w+'rem',
+                height:comp.css.base.h+'rem',
+                transform: 'rotate('+comp.css.base.r+'deg)',
+                border: comp.css.base.bh+'rem solid '+comp.css.base.bc,
+                'border-radius': comp.css.base.br+'rem'
+            } ">{{comp.content}}
+
+                        </div>
+
+                        <div v-else-if="comp.type === 'img'" class="comp" :style="{
+                    top:comp.css.base.t+'rem',
+                    left:comp.css.base.l+'rem',
+                    width:comp.css.base.w+'rem',
+                    height:comp.css.base.h+'rem',
+                    transform: 'rotate('+comp.css.base.r+'deg)',
+                    border: comp.css.base.bh+'rem solid '+comp.css.base.bc,
+                    'border-radius': comp.css.base.br+'rem'
+                } ">
+                            <img class="in_comp" :src="comp.src" />
+                        </div>
+                        <div v-else-if="comp.type === 'video'" class="comp" :style="{
+                    top:comp.css.base.t+'rem',
+                    left:comp.css.base.l+'rem',
+                    width:comp.css.base.w+'rem',
+                    height:comp.css.base.h+'rem',
+                    transform: 'rotate('+comp.css.base.r+'deg)',
+                    border: comp.css.base.bh+'rem solid '+comp.css.base.bc,
+                    'border-radius': comp.css.base.br+'rem'
+                } ">
+                            <video class="in_comp" :src="comp.src" controls="controls">your browser does not support the
+                                video tag</video>
+                        </div>
+                    </div>
+
+
+
+
+
+                </div>
+
+            </div>
+            <!-- 如果需要分页器 -->
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+
+
+    <script th:inline="javascript">
+        var data=JSON.parse([[${love.canvas}]])
+        // var data = page_data_temp
+        var app = new Vue({
+            el: '#app',
+            data: {
+                message: 'Hello Vue!',
+                // data: null,
+                c_h: window.innerHeight,
+                c_w: window.innerWidth,
+                isPlayMusic: true,
+                isSingleCanvas: data.isSingleCanvas,
+                pages: data.pages,
+                canvasName: "",
+                activePage: 0,
+                musicSrc: data.musicSrc,
+                animations: ANI_NAME,
+            }, computed: {
+
+                Swiper() {
+                    return new Swiper('.swiper-container', {
+                        notNextTick: true, //notNextTick是一个组件自有属性，如果notNextTick设置为true，组件则不会通过NextTick来实例化swiper，也就意味着你可以在第一时间获取到swiper对象，假如你需要刚加载遍使用获取swiper对象来做什么事，那么这个属性一定要是true
+                        direction: "vertical", //水平方向移动
+                        grabCursor: true, //鼠标覆盖Swiper时指针会变成手掌形状，拖动时指针会变成抓手形状
+                        setWrapperSize: true, //Swiper使用flexbox布局(display: flex)，开启这个设定会在Wrapper上添加等于slides相加的宽或高，在对flexbox布局的支持不是很好的浏览器中可能需要用到。
+                        autoHeight: true, //自动高度。设置为true时，wrapper和container会随着当前slide的高度而发生变化
+                        slidesPerView: 1, //设置slider容器能够同时显示的slides数量(carousel模式)。可以设置为数字（可为小数，小数不可loop），或者 'auto'则自动根据slides的宽度来设定数量。loop模式下如果设置为'auto'还需要设置另外一个参数loopedSlides。
+                        mousewheel: true, //开启鼠标滚轮控制Swiper切换。可设置鼠标选项，默认值false
+                        mousewheelControl: true, //同上
+                        height: window.innerHeight, // 高度设置，占满设备高度
+                        resistanceRatio: 0, //抵抗率。边缘抵抗力的大小比例。值越小抵抗越大越难将slide拖离边缘，0时完全无法拖离。本业务需要
+                        observeParents: true, //将observe应用于Swiper的父元素。当Swiper的父元素变化时，例如window.resize，Swiper更新
+                        pagination: {
+                            el: ".swiper-pagination"
+                        }
+                    })
+
+                }
+            }, mounted() {
+
+                console.log(data)
+                const self = this;
+                this.Swiper.on("init", function () {
+                    // console.log("init");
+                    self.activePage = this.activeIndex;
+                });
+                this.Swiper.on("slideChangeTransitionStart", function () {
+                    // console.log("slideChangeTransitionStart");
+                    self.activePage = this.activeIndex;
+                });
+                const canvas_total = this.$refs.canvas;
+
+                if (this.isSingleCanvas) {
+                    canvasControler[0].canvasEffect(canvas_total)
+                } else {
+                    for (var i = 0; i < canvas_total.length; i++) {
+                        canvasControler[i].canvasEffect(canvas_total[i])
+
+                    }
+
+                }
+
+
+
+
+            }
+        })
+        // document.getElementById("canvas").height = window.innerHeight
+        // document.getElementById("canvas").width = window.innerWidth
+        // var mySwiper =
+
+        // mySwiper.on("init", function () {
+        //     console.log("init");
+        // });
+        // var self = app.this
+        // var activePage = app.$data.activePage
+        // mySwiper.on("slideChangeTransitionStart", function () {
+        //     self.activePage = activePage.activeIndex;
+        //     console.log(123)
+        // });
+
+
+
+    </script>
+</body>
+
+</html>

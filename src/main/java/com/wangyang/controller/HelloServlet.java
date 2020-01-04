@@ -13,7 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-@WebServlet("/servlet")
+//@WebServlet("/servlet")
+@Deprecated
 public class HelloServlet extends HttpServlet {
 
     @Override

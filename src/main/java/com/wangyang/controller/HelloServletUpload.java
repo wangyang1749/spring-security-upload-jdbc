@@ -10,8 +10,9 @@ import javax.servlet.http.Part;
 import java.io.IOException;
 import java.util.Collection;
 
-@WebServlet("s3_upload")
-@MultipartConfig
+//@WebServlet("s3_upload")
+//@MultipartConfig
+@Deprecated
 public class HelloServletUpload extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

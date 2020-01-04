@@ -1,15 +1,10 @@
-package com.wangyang.config.spring;
+package com.wangyang.config;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-//import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-//import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
@@ -19,29 +14,15 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.util.Properties;
 
-@Configurable
-@ComponentScan({"com.wangyang.dao.impl.jpa","com.wangyang.service","com.wangyang.config"})
+@Configuration
+@ComponentScan({"com.wangyang.service"})
 @EnableTransactionManagement
+@EnableJpaRepositories(basePackages = "com.wangyang.dao")
 public class RootConfig {
-    /**
-     * mysql 的数据源配置
-     * @return
-     */
-//    @Bean
-//    public DataSource dataSource(){
-//        BasicDataSource ds = new BasicDataSource();
-//        ds.setUrl("jdbc:mysql://47.93.201.74:3306/my_test?useUnicode=true&characterEncoding=UTF-8");
-//        ds.setUsername("root");
-//        ds.setPassword("123456");
-//
-//        System.out.println("-------配置spring的数据源----mysql------");
-//        return ds;
-//    }
 
     /**
-     * 配置H2 databases的数据源
+     * H2 Database DataSource
      * @return
      */
     @Bean
@@ -50,20 +31,8 @@ public class RootConfig {
         ds.setDriverClassName("org.h2.Driver");
         ds.setUrl("jdbc:h2:~/spring_test");
         ds.setUsername("sa");
-        System.out.println("-------配置spring的数据源----- H2 Databases-----");
         return ds;
     }
-
-    /**
-     * Spring JdbcTemplate
-     * @param dataSource
-     * @return
-     */
-    @Bean
-    public JdbcTemplate getJdbcTemplate(DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
-    }
-
     /**
      * 以hibernate作为jpa实现的配置
      * @param dataSource
@@ -94,4 +63,5 @@ public class RootConfig {
         txManager.setEntityManagerFactory(entityManagerFactory);
         return txManager;
     }
+
 }

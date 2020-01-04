@@ -14,8 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 
-@Controller
-@CrossOrigin(origins = "*", maxAge = 3600)
+//@Controller
+//@CrossOrigin(origins = "*", maxAge = 3600)
 public class HelloController {
 
 

@@ -3,8 +3,92 @@
 `jwt` 
 
 ## web层介绍
+## spring mvc 异常处理
++ 一种是使用 HandlerExceptionResolver 接口
+> Spring 已经提供默认的实现类 SimpleMappingExceptionResolver
+>404 表示请求路径错误，服务器找不到对应的资源，属于容器抛出的异常， 跟spring 无关
+HandlerExceptionResolver 是spring 的异常拦截类，只处理程序运行过程中的错误
+
+```xml
+<error-page>
+   <error-code>404</error-code>
+   <location>/404.jsp</location>
+</error-page>
+```
+```java
+@Override
+public void onStartup(ServletContext servletContext) throws ServletException {
+    AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
+    ctx.register(ConfigMVC.class);
+    ctx.setServletContext(servletContext);
+    Dynamic servlet = servletContext.addServlet("dispatcher", new DispatcherServlet(ctx));
+    servlet.addMapping("/");
+    servlet.setLoadOnStartup(1);
+    servlet.setInitParameter("throwExceptionIfNoHandlerFound", "true");
+}
+```
+
+```java
+@Override
+protected DispatcherServlet createDispatcherServlet(WebApplicationContext servletAppContext) {
+    final DispatcherServlet dispatcherServlet = (DispatcherServlet) super.createDispatcherServlet(servletAppContext);
+    dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
+    return dispatcherServlet;
+}
+```
+
+```java
+@Override
+public void customizeRegistration(ServletRegistration.Dynamic registration) {
+    registration.setInitParameter("throwExceptionIfNoHandlerFound", "true");
+}
+```
+
+```java
+@ControllerAdvice
+public class ErrorController {
+    @ResponseBody
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public String error404(Exception ex) {
+
+        return "404";
+    }
+}
+```
+
+
+```java
+@Component
+public class DefaultExceptionHandler implements HandlerExceptionResolver {
+    public ModelAndView resolveException(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, Exception e) {
+        System.out.println("find exception");
+        return null;
+    }
+}
+```
+
+```java
+@Bean
+public SimpleMappingExceptionResolver simpleMappingExceptionResolver(){
+    SimpleMappingExceptionResolver resolver = new SimpleMappingExceptionResolver();
+    resolver.setExceptionAttribute("e");
+    /**
+     * 对应页面的异常类型
+     */
+    resolver.addStatusCode("admin", 400);
+    resolver.setDefaultErrorView("admin");
+    Properties mapping = new Properties();
+    mapping.put("com.wangyang.controller.MyException" , "admin");
+    resolver.setExceptionMappings(mapping);
+    return resolver;
+}
+```
+
++ Controller 内部单独实现
+
 ### Spring Security
 > 
+>
 ### 实现SpringSecurity+Jwt+token验证
 
 ## 持久层的介绍

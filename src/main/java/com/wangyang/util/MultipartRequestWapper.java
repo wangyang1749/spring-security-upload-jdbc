@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class MultipartRequestWapper extends HttpServletRequestWrapper {
     Map<String,String[]> params = new HashMap<String, String[]>();
     public final static String PATH="/home/wy/source_code/JavaProject/spring-study/";
